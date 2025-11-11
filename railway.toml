@@ -1,7 +1,6 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Backend/Dockerfile"
-dockerContext = "Backend"
 
 [deploy]
 startCommand = "java -Dserver.port=$PORT -jar app.jar"
