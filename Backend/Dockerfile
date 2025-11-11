@@ -7,14 +7,16 @@ WORKDIR /app
     # Copy pom.xml and download dependencies (cached layer)
     COPY Backend/pom.xml .
     # Download dependencies with retry logic for network resilience
-    RUN mvn dependency:go-offline -B || mvn dependency:go-offline -B || mvn dependency:resolve -B# Copy source code
-COPY Backend/src ./src
+    RUN mvn dependency:go-offline -B || mvn dependency:go-offline -B || mvn dependency:resolve -B
+
+    # Copy source code
+    COPY Backend/src ./src
 
 # Build the application
 RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:17-jre-alpine
+# Runtime stage - Use Debian-based image for glibc compatibility with Firebase/gRPC native libraries
+FROM eclipse-temurin:17-jre
 
 # Set working directory
 WORKDIR /app
