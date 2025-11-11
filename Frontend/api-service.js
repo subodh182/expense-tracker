@@ -7,7 +7,7 @@
 const API_CONFIG = {
     USE_FIREBASE: true, // Set to false to use Spring Boot backend
     BACKEND_URL: 'http://localhost:8080/api/expenses', // Change for production
-    PRODUCTION_URL: 'https://your-railway-app.up.railway.app/api/expenses'
+    PRODUCTION_URL: 'https://expense-tracker-production-0cd7.up.railway.app/api/expenses'
 };
 
 // Get the correct API URL based on environment
