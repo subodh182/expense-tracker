@@ -30,4 +30,5 @@ EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=production
 
 # Run the application with Railway's PORT
-CMD java -Dserver.port=${PORT:-8080} -jar app.jar
+# Use shell form to allow environment variable expansion
+CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
