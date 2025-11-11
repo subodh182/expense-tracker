@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team - Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 60px 40px 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 70px;
+            position: relative;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(-5px);
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .page-header h1 {
+            font-size: 3.8rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header p {
+            font-size: 1.35rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .team-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 80px;
+            flex: 1;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .team-grid-bottom {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .team-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        [data-theme="dark"] .team-card {
+            background: #2d2d44;
+            border-color: #3d3d5c;
+        }
+
+        .team-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+        }
+
+        .avatar-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .team-card:hover .avatar-wrapper::before {
+            opacity: 1;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.8rem;
+            color: white;
+            transition: all 0.4s ease;
+        }
+
+        .team-card:nth-child(1) .avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.35);
+        }
+
+        .team-card:nth-child(2) .avatar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 12px 30px rgba(240, 147, 251, 0.35);
+        }
+
+        .team-card:nth-child(3) .avatar {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.35);
+        }
+
+        .team-grid-bottom .team-card:nth-child(1) .avatar {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            box-shadow: 0 12px 30px rgba(67, 233, 123, 0.35);
+        }
+
+        .team-grid-bottom .team-card:nth-child(2) .avatar {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            box-shadow: 0 12px 30px rgba(250, 112, 154, 0.35);
+        }
+
+        .team-card:hover .avatar {
+            transform: scale(1.12) rotate(5deg);
+        }
+
+        .name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        [data-theme="dark"] .name {
+            color: #e2e8f0;
+        }
+
+        .role {
+            font-size: 1rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 22px;
+            padding: 9px 22px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover .role {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .description {
+            color: #64748b;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        [data-theme="dark"] .description {
+            color: #a0aec0;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tech-badge {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #667eea;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tech-badge:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+            border-color: transparent;
+        }
+
+        @media (max-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .team-grid-bottom {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 50px 20px 40px;
+            }
+            
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .page-header p {
+                font-size: 1.1rem;
+            }
+
+            .back-btn {
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+            }
+
+            .back-btn:hover {
+                transform: translateX(-5px);
+            }
+
+            .team-container {
+                padding: 0 20px 60px;
+            }
+
+            .team-grid,
+            .team-grid-bottom {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .team-grid-bottom {
+                max-width: 100%;
+            }
+
+            .team-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            z-index: 0;
+        }
+
+        .team-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding: 0 40px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 50px;
+            font-size: 15px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        /* Second row with 2 cards centered */
+        .team-card:nth-child(4),
+        .team-card:nth-child(5) {
+            grid-column: span 1;
+        }
+
+        .team-card:nth-child(4) {
+            margin-left: 25%;
+        }
+
+        .team-card:nth-child(5) {
+            margin-right: 25%;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px 35px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .team-card:hover::before {
+            left: 100%;
+        }
+
+        .team-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 30px;
+        }
+
+        .avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .team-card:nth-child(1) .avatar {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .team-card:nth-child(2) .avatar {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.4);
+        }
+
+        .team-card:nth-child(3) .avatar {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+        }
+
+        .team-card:nth-child(4) .avatar {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.4);
+        }
+
+        .team-card:nth-child(5) .avatar {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .team-card:hover .avatar {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .role {
+            font-size: 1rem;
+            color: #a5b4fc;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 10px 24px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .tech-badge {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .team-card:nth-child(1) { animation-delay: 0.1s; }
+        .team-card:nth-child(2) { animation-delay: 0.2s; }
+        .team-card:nth-child(3) { animation-delay: 0.3s; }
+        .team-card:nth-child(4) { animation-delay: 0.4s; }
+        .team-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.8rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .team-container {
+                padding: 0 20px;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .team-card:nth-child(4),
+            .team-card:nth-child(5) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .team-card {
+                padding: 40px 25px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1200px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .team-card:nth-child(4),
+            .team-card:nth-child(5) {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .avatar {
+                width: 120px;
+                height: 120px;
+                font-size: 3.5rem;
+            }
+
+            .avatar-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+
+            .name {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                ← Back
+            </a>
+            <h1>Meet Our Team</h1>
+            <p>The talented developers behind Expense Tracker</p>
+        </div>
+    </div>
+
+    <div class="team-container">
+
+        <!-- First Row - 3 Cards -->
+        <div class="team-grid">
+
+
+                        <!-- Backend Developer 1 -->
+            <div class="team-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar">👨‍💻</div>
+                </div>
+                <h2 class="name">Subodh Singh</h2>
+                <div class="role">Backend Developer</div>
+                <p class="description">
+                    Building robust and scalable server-side applications with Spring Boot.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Java</span>
+                    <span class="tech-badge">Spring Boot</span>
+                    <span class="tech-badge">REST API</span>
+                    <span class="tech-badge">Maven</span>
+                </div>
+            </div>
+
+
+                        <!-- Backend Developer 2 -->
+            <div class="team-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar">👨‍💻</div>
+                </div>
+                <h2 class="name">Anuj Prajapati</h2>
+                <div class="role">Backend Developer</div>
+                <p class="description">
+                    Developing efficient APIs and managing backend infrastructure.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Java</span>
+                    <span class="tech-badge">Spring Boot</span>
+                    <span class="tech-badge">JPA</span>
+                    <span class="tech-badge">MySQL</span>
+                </div>
+            </div>
+
+
+            <!-- Frontend Developer -->
+            <div class="team-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar">👨‍💻</div>
+                </div>
+                <h2 class="name">Raj Solanki</h2>
+                <div class="role">Frontend Developer</div>
+                <p class="description">
+                    Crafting beautiful and responsive user interfaces with modern web technologies.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">HTML5</span>
+                    <span class="tech-badge">CSS3</span>
+                    <span class="tech-badge">JavaScript</span>
+                    <span class="tech-badge">UI/UX</span>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <!-- Second Row - 2 Cards Centered -->
+        <div class="team-grid-bottom">
+            <!-- Database Engineer -->
+            <div class="team-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar">👨‍💻</div>
+                </div>
+                <h2 class="name">Aarif</h2>
+                <div class="role">Database Engineer</div>
+                <p class="description">
+                    Managing data architecture and implementing Firebase cloud solutions.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Firebase</span>
+                    <span class="tech-badge">Firestore</span>
+                    <span class="tech-badge">Auth</span>
+                    <span class="tech-badge">NoSQL</span>
+                </div>
+            </div>
+
+            <!-- Testing Engineer -->
+            <div class="team-card">
+                <div class="avatar-wrapper">
+                    <div class="avatar">👨‍💻</div>
+                </div>
+                <h2 class="name">Suraj</h2>
+                <div class="role">Testing Engineer</div>
+                <p class="description">
+                    Ensuring quality through comprehensive testing and quality assurance.
+                </p>
+                <div class="tech-stack">
+                    <span class="tech-badge">Manual Testing</span>
+                    <span class="tech-badge">QA</span>
+                    <span class="tech-badge">Bug Tracking</span>
+                    <span class="tech-badge">Test Cases</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

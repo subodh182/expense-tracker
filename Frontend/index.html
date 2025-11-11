@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Manage Your Finances</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Firebase Configuration (loaded before Firebase SDK) -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Firebase SDK and Initialization -->
+    <script type="module" id="firebase-init">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc, Timestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Function to initialize Firebase
+        async function initializeFirebase() {
+            // Check if config is loaded
+            if (!window.firebaseConfig) {
+                console.error('❌ Firebase configuration not found.');
+                alert('Firebase configuration missing.');
+                return;
+            }
+            
+            try {
+                // Initialize Firebase
+                const app = initializeApp(window.firebaseConfig);
+                window.auth = getAuth(app);
+                window.db = getFirestore(app);
+                
+                console.log('🔧 Setting up Firestore modules...');
+                
+                // Export Firestore modules for api-service.js
+                window.firestoreModules = {
+                    collection,
+                    query,
+                    where,
+                    orderBy,
+                    getDocs,
+                    addDoc,
+                    updateDoc,
+                    deleteDoc,
+                    doc,
+                    Timestamp
+                };
+                
+                console.log('✅ Firestore modules set:', Object.keys(window.firestoreModules));
+                
+                // Mark Firebase as ready
+                window.firebaseReady = true;
+                window.dispatchEvent(new Event('firebaseReady'));
+                console.log('✅ Firebase initialized successfully');
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                alert('Failed to initialize Firebase. Check console for details.');
+            }
+        }
+        
+        // Initialize Firebase immediately
+        initializeFirebase();
+    </script>
+</head>
+<body>
+    
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <div class="auth-header">
+                <h2 id="authTitle">Welcome Back</h2>
+                <p id="authSubtitle">Sign in to manage your expenses</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="auth-btn">Sign In</button>
+                <p class="auth-error" id="loginError"></p>
+            </form>
+            
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required placeholder="••••••••" minlength="6">
+                </div>
+                <button type="submit" class="auth-btn">Create Account</button>
+                <p class="auth-error" id="signupError"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header" id="mainHeader" style="display: none;">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">Expense Tracker</span>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </button>
+                <button class="nav-btn" data-section="expenses">
+                    <span class="icon">📝</span> Expenses
+                </button>
+                <button class="nav-btn" data-section="analytics">
+                    <span class="icon">📈</span> Analytics
+                </button>
+                <a href="team.html" style="text-decoration: none;">
+                    <button class="nav-btn">
+                        <span class="icon">👥</span> Team
+                    </button>
+                </a>
+            </nav>
+            <div class="header-actions">
+                <span class="user-email" id="userEmail"></span>
+                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" id="mainContainer" style="display: none;">
+
+        <!-- Summary Section -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-icon">💵</div>
+                <div class="summary-details">
+                    <span class="summary-label">Total Expenses</span>
+                    <span class="summary-value" id="totalExpenses">0</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">💰</div>
+                <div class="summary-details">
+                    <span class="summary-label">Total Amount</span>
+                    <span class="summary-value" id="totalAmount">₹0.00</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">📅</div>
+                <div class="summary-details">
+                    <span class="summary-label">This Month</span>
+                    <span class="summary-value" id="monthlyAmount">₹0.00</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">📊</div>
+                <div class="summary-details">
+                    <span class="summary-label">Avg. Per Day</span>
+                    <span class="summary-value" id="avgAmount">₹0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Expense Form -->
+        <div class="card">
+            <div class="card-header">
+                <h2>➕ Add New Expense</h2>
+                <span class="card-subtitle">Fill in the details below</span>
+            </div>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required maxlength="100" 
+                           placeholder="e.g., Groceries">
+                    <span class="error" id="titleError"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="amount">Amount (₹) *</label>
+                        <input type="number" id="amount" name="amount" required 
+                               step="0.01" min="0.01" max="999999999.99" 
+                               placeholder="0.00">
+                        <span class="error" id="amountError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Education">Education</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span class="error" id="categoryError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date *</label>
+                        <input type="date" id="date" name="date" required>
+                        <span class="error" id="dateError"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Add Expense
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Category Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Spending by Category</h2>
+                <span class="card-subtitle">Visual breakdown of your expenses</span>
+            </div>
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="categoryBarChart"></canvas>
+                </div>
+            </div>
+            <div id="categorySummary" class="category-summary">
+                <p class="text-muted">No expenses yet</p>
+            </div>
+        </div>
+
+        <!-- Monthly Trend Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📈 Monthly Spending Trend</h2>
+                <span class="card-subtitle">Track your spending over time</span>
+            </div>
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="monthlyBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses List -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📋 All Expenses</h2>
+                <div class="filters">
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Education">Education</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="sortBy" class="filter-select">
+                        <option value="date-desc">Date (Newest)</option>
+                        <option value="date-asc">Date (Oldest)</option>
+                        <option value="amount-desc">Amount (High to Low)</option>
+                        <option value="amount-asc">Amount (Low to High)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="expensesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No expenses found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>💰 Expense Tracker</h3>
+                <p>Track your expenses efficiently and make better financial decisions.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul>
+                    <li>Add & Manage Expenses</li>
+                    <li>Visual Analytics</li>
+                    <li>Category Tracking</li>
+                    <li>Secure & Private</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" data-nav="dashboard">Dashboard</a></li>
+                    <li><a href="#" data-nav="expenses">Expenses</a></li>
+                    <li><a href="#" data-nav="analytics">Analytics</a></li>
+                    <li><a href="team.html" target="_blank">Our Team</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>About</h4>
+                <p>Built with Spring Boot and modern web technologies.</p>
+                <p class="footer-version">Version 1.0.0</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="api-service.js"></script>
+    <script type="module" src="firebase-auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

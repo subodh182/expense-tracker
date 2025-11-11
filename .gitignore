@@ -1,0 +1,91 @@
+# .gitignore for Expense Tracker
+
+# Environment Variables - NEVER commit!
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+!.env.example
+
+# Firebase Config - NEVER commit API keys!
+Frontend/firebase-config.js
+
+# Firebase Service Account Keys - NEVER commit!
+Backend/serviceAccountKey.json
+serviceAccountKey.json
+**/serviceAccountKey.json
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Java
+*.class
+*.log
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Data files (keep template, ignore actual data)
+Backend/expenses.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Temporary files
+*.tmp
+*.bak
+*.temp
+.cache/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build outputs
+build/
+dist/
+out/
