@@ -4,11 +4,10 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies (cached layer)
-COPY Backend/pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source code
+    # Copy pom.xml and download dependencies (cached layer)
+    COPY Backend/pom.xml .
+    # Download dependencies with retry logic for network resilience
+    RUN mvn dependency:go-offline -B || mvn dependency:go-offline -B || mvn dependency:resolve -B# Copy source code
 COPY Backend/src ./src
 
 # Build the application
