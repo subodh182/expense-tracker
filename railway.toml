@@ -3,6 +3,5 @@ builder = "DOCKERFILE"
 dockerfilePath = "Backend/Dockerfile"
 
 [deploy]
-startCommand = "java -Dserver.port=$PORT -jar app.jar"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
